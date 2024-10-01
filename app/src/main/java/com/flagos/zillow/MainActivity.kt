@@ -21,8 +21,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.flagos.zillow.DogImagesViewModel.DogImagesIntent
 import com.flagos.zillow.data.DogImagesApiClient
 import com.flagos.zillow.data.DogImagesRepository
@@ -35,7 +39,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             ZillowTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // Apply the padding to the ImageListScreen content
                     Box(modifier = Modifier.padding(innerPadding)) {
                         ImageListScreen(
                             viewModel = DogImagesViewModel(
@@ -85,12 +88,19 @@ fun DogImagesList(dogImagesUrls: List<String>) {
 
 @Composable
 fun ImageItem(imageUrl: String) {
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(imageUrl)
+            .crossfade(true)
+            .build()
+    )
+
     Image(
-        painter = rememberImagePainter(imageUrl),
+        painter = painter,
         contentDescription = null,
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(300.dp),
         contentScale = ContentScale.Crop
     )
 }
